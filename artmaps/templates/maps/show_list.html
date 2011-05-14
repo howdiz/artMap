@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<title>Artblog Maps</title>
+    <link type="text/css" href="media/maps/themes/base/jquery.ui.all.css" rel="stylesheet" />
+	<script src="media/maps/js/jquery-1.4.2.js"></script>
+	<script src="media/maps/js/ui/jquery.ui.core.js"></script>
+	<script src="media/maps/js/ui/jquery.ui.widget.js"></script>
+	<script src="media/maps/js/ui/jquery.ui.tabs.js"></script>
+    <script src="media/maps/js/ui/jquery.ui.button.js"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+	
+	<link rel="stylesheet" type="text/css" href="media/maps/css/custom-theme/jquery-ui-1.8.1.custom.css">
+    <link href="media/maps/fresh.css" rel="stylesheet" type="text/css" />
+
+<!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.freshymaps #sidebar1 { padding-top: 30px; }
+.freshymaps #mainContent { zoom: 1; padding-top: 15px; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<script >
+
+var shows;
+$(function() {
+	$("#tabs").tabs().addClass('ui-tabs-vertical ui-helper-clearfix');
+	$("#tabs li").removeClass('ui-corner-top').addClass('ui-corner-left');
+	//$("#check").button();
+	//$("#format").buttonset();
+	$("#cali").click(function() {
+		$("#calilist").show();
+	});
+	$("#go").click(function() {
+		$("#calilist").hide();
+	});
+
+	$("input[name=openings]").change(mapStuff());
+		
+	$.getJSON("show_json",
+    	function(data){
+			shows = data;
+			mapStuff(shows);
+	});
+});
+
+
+function mapStuff(shows) {
+	var locations = new Array();
+	for(i=0; i<shows.length; i++) {
+		showsOpen = filterOpenings(shows[i]);
+		if(showsOpen) {
+			
+		
+			locationId = shows[i].fields.gallery.fields.location.pk;
+		
+			if(locations[locationId]==undefined) 
+				locations[locationId] = new Object();
+		  	
+		  	if(locations[locationId].info==undefined) 
+		  		locations[locationId].info = "";
+		
+			locations[locationId].info += setInfo(shows[i]);
+			locations[locationId].address = shows[i].fields.gallery.fields.location.fields;
+		}
+	}
+	setMarkers(locations);	
+}
+
+var map;
+var infowindow = new google.maps.InfoWindow();
+
+function setMarkers(locations) {
+	var latlng = new google.maps.LatLng(39.952648,-75.163393);
+    	var myOptions = {
+      		zoom: 13,
+      		center: latlng,
+      		mapTypeId: google.maps.MapTypeId.ROADMAP,
+			mapTypeControl: false,
+			navigationControl: true,
+			navigationControlOptions: {
+				style: google.maps.NavigationControlStyle.ZOOM_PAN,
+				position: google.maps.ControlPosition.RIGHT_CENTER
+			},
+			scaleControl: true,
+			scaleControlOptions: {
+				position: google.maps.ControlPosition.RIGHT_BOTTOM
+			}
+   		};
+    map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+    map.setCenter(latlng);
+    
+ 	
+	for(i=0; i<locations.length; i++) {
+		if(locations[i]!=undefined) {
+		
+        	latlng = new google.maps.LatLng(locations[i].address.latitude,locations[i].address.longitude);
+        	
+        	var marker = new google.maps.Marker({
+            	map: map, 
+            	position: latlng
+        	});
+        	
+        	 attachContent(marker, locations[i].info, i);
+        	     	
+    	}
+  	}
+  	
+  	function attachContent(marker, infos, listingID) {
+  	
+	  	var onCLickFunction = function() {
+	  		infowindow.close();
+	  		infowindow.setContent(infos);
+			infowindow.open(map,marker);
+		}
+				
+	  	$('.location'+i).live('click', onCLickFunction);
+				
+		google.maps.event.addListener(marker, 'click', onCLickFunction);
+	
+	}
+}
+
+function setInfo(show) {
+	var html = "<div id='leftBubble'>";
+	if (show.fields.image != "") {
+		html += "<img src='media/maps/uploads/" + show.fields.image + "'>";
+	}
+	html += "<div id='showBubble'>" + show.fields.name +"</div>";
+
+	//html += "<strong>" + entry["gsx$"+param_titleColumn].$t + "</strong>";
+
+	//var label = entry["gsx$"+param_titleColumn].$t;
+	/*var rank = 0;
+	if(usingRank && entry["gsx$" + param_rankColumn]) {
+		rank = parseInt(entry["gsx$" + param_rankColumn].$t);
+	}*/
+	if(show.fields.description) {
+		html += "<div id='description'>" + show.fields.description +"</div>";
+	}	
+	if (show.fields.opening_date != "" ) {
+		/*if (entry["gsx$" + param_openingNightColumn].$t != "") {
+			html += "<div class='openingBubble'>Opening: " + entry["gsx$" + param_openingNightColumn].$t + ", " + entry["gsx$" + param_openingHoursColumn].$t;
+		}
+		else {
+		*/
+			html += "<div class='openingBubble'>Opening: " + show.fields.opening_date + ", " + show.fields.time_info;
+		//}
+	}
+	html += "</div></div>";
+	html += "<div id='rightBubble'>";
+	html += "<div id='titleBubble'>";
+	html += show.fields.gallery.name;
+	html += "</div>";
+	if (show.fields.gallery.fields.advertiser != "") {
+		html += "<div id='advertiserBubble'>";
+		html += "bloGads";
+		html += "</div>";
+	}
+	html += "<div id='addressBubble'>";
+	html += show.fields.gallery.fields.location.fields.address1 + show.fields.gallery.fields.location.fields.address2;
+	html += "</div>";
+	html += "<div id='urlBubble'>";
+	html += "<a href='"+ show.fields.gallery.fields.gallery_url+"' target='blank'>" + show.fields.gallery.fields.gallery_url + "</a>";
+	html += "</div>";
+	html += "<div id='dates'>";
+	html += "Hours: " + show.fields.time_info;
+	html += "</div>";
+	/*if(entry["gsx$" + param_admissionColumn]) {
+		html += "<div id='admission'>";
+		html += entry["gsx$" + param_admissionColumn].$t;
+		html += "</div>";
+	}*/
+	html += "<div id='septaBubble'>";
+	html += show.fields.gallery.fields.location.septa;
+	html += "</div></div>";
+
+	return html;
+}
+
+function filterOpenings(show) {
+	if($("input[name=openings]").is(":checked")) {
+		if($(this)) {
+			var today = new Date();
+			var nextWeek = new Date ();
+			nextWeek.setDate(today.getDate() + 7);
+			endDate = new Date(show.fields.end_date);
+			if (endDate > today && endDate <= nextWeek)
+			return true;
+			else return false;
+
+
+		}
+		else return true;
+	}
+	
+}
+
+</script>
+	
+</head>
+
+<body class="freshymaps" >
+<div id="map"> <div id="map_canvas"></div></div>
+
+<div id="logo">
+	<img src="media/maps/images/maps_logo.png" />
+</div>
+
+
+
+<div id="tabs">
+	<div id ="tabsTop">
+			<ul>
+				<li><a href="#tabs-1">shows</a></li>
+				<li><a href="#tabs-2">events</a></li>
+				<li><a href="#tabs-3">our picks</a></li>
+			</ul>
+    </div>
+  <div id="tabs-1">
+  <div id="sidebarTop">
+           <div id="toolbar">
+       			  <div id="showcontrols">
+           				<span>agenda:</span>
+ 				  </div>
+                  <div id="cali">
+                   		<img src="media/maps/images/calendar.png" alt="Browse by date" width="40" height="35" align="middle" />
+                   </div>
+                   <div id="format">
+                            <input type="checkbox" id="check" name="openings" /><label for="check1">openings</label>
+                            <input type="checkbox" id="check" name="closings" /><label for="check2">closings</label>
+                   </div>
+                   <br class="clearfloat" />
+                   <div id="calilist">
+                   			<div id="select">
+                        	<select name="month" >
+                                <option value="tag1">July</option>
+                                <option value="tag2">June</option>
+                                <option value="tag3" selected="selected">May</option>
+                                <option value="tag4">April</option>
+                                <option value="tag5">March</option>
+                                <option value="tag6">February</option>
+                                <option value="tag7">January</option>
+     						</select>  
+                            <select name="year" >
+                                <option value="tag1">2009</option>
+                                <option value="tag3" selected="selected">2010</option>
+     						</select>
+                            </div>       
+                            <div id="go"><img src="media/maps/images/gobtn.png"/></div>              
+                   </div>     
+         </div>
+    </div>           
+    <div id="showListings">
+{% if shows %}
+        <div id="showlistings" >
+        {% for show in shows %}
+        	<a class="listing location{{show.gallery.location.id}}" data-listingid="" style="color: rgb(0, 0, 0);"><img src="media/maps/uploads/{{ show.image }}">
+            	<div id="labelDiv">{{ show.gallery }}</div>
+            	<div id="showDiv">{{ show.name }}</div>
+            	<div id="opening">Opening : {{ show.opening_date }}</div>
+            	<!--<div id="rangeDiv">{{ show.opening_date }}</div>-->
+<div class="address">{{ show.gallery.location.address1 }}</div>
+            </a>
+        {% endfor %}
+        </div>
+{% else %}
+        <p>No Shows</p>
+{% endif %}
+<div id="listing3" class="sidebarListing">
+        	
+</div>
+<br class="clearfloat">  
+    </div><!-- End showListings -->
+    
+    
+    </div>
+			<div id="tabs-2">Phasellus mattis tincidunt nibh. Cras orci urna, blandit id, pretium vel, aliquet ornare, felis. Maecenas scelerisque sem non nisl. Fusce sed lorem in enim dictum bibendum.</div>
+			<div id="tabs-3">Nam dui erat, auctor a, dignissim quis, sollicitudin eu, felis. Pellentesque nisi urna, interdum eget, sagittis et, consequat vestibulum, lacus. Mauris porttitor ullamcorper augue.</div>
+		</div><!-- end tabs -->
+
+<div id="footer">
+	<div id="footerContent">Content</div>
+    <div id="sponsor"><img src="media/maps/images/corporate.png" alt="artblog INC"></div>
+</div>
+
+</body>
+</html>

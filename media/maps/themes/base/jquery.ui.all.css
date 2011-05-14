@@ -1,0 +1,10 @@
+@import "jquery.ui.base.css";
+@import "jquery.ui.theme.css";
+
+.freshymaps #footer #footerContent {
+	width: 450px;
+	text-align: left;
+}
+.freshymaps #footer #sponsor {
+	float: right;
+}

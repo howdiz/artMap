@@ -1,0 +1,542 @@
+@charset "UTF-8";
+body  { 
+    font: 100% Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	color: #000000;
+}
+.freshymaps {
+	margin: 0px;
+	padding: 0px;
+	height: 100%;
+	width: 100%;
+} 
+
+.freshymaps #map {
+	padding: 0px;
+	height: 100%;
+	width: 100%;
+	border-top-width: thin;
+	border-top-style: solid;
+	border-top-color: #FFF;
+	background-color: #FF9;
+	margin: 0px;
+	margin-left: 300px;
+	position: fixed;
+}
+
+.freshymaps #map #map_canvas {
+	height: 100%;
+	width: 100%;
+}
+
+/* ADJUST WIDTH WHEN BUBBLE IS INTEGRATED */
+.freshymaps #topBar {
+	display: none;
+	width: 650px;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	text-align: right;
+	margin: 0px;
+	padding: 0px;
+}
+
+/* ------TAB styles------- */
+.freshymaps #tabs {
+	text-align: left;
+	margin: 0px;
+	padding: 0px;
+	overflow: scroll;
+	width: 315px;
+	position: absolute;
+	height: 100%;
+	bottom: 0px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+.freshymaps #tabs .whiteout {
+	color: #FFF;
+}
+.freshymaps #tabs #tabsTop {
+	height: 60px;
+	width: 300px;
+	margin: 0px;
+	padding: 0px;
+	position: fixed;
+	background-color: #FFF;
+}
+.freshymaps #tabs #sidebarTop {
+	height: 60px;
+	width: 300px;
+	padding: 0px;
+	position: fixed;
+	margin-top: 35px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+}
+#toolbar {
+	height: 50px;
+	background-color: #ffffff;
+	margin: 0px;
+	padding-top: 10px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 10px;
+	border-top-width: thick;
+	border-top-style: solid;
+	border-top-color: #00aeef;
+	background-image: url(../images/shadow.png);
+	background-repeat: repeat-x;
+	background-position: bottom;
+}
+#toolbar h1 {
+	font-size: 16px;
+	color: #333333;
+	margin: 0px;
+	padding-top: 10px;
+	padding-right: 0px;
+	padding-bottom: 10px;
+	padding-left: 0px;
+}
+#toolbar #showcontrols {
+	float: left;
+	font-size: 24px;
+	padding-right: 5px;
+	line-height: 32px;
+	color: #666;
+}
+
+
+/* --------TAB 1: SHOWS--------- */
+.freshymaps #tabs #tabs-1 {
+	width: 300px;
+	background-color: #FFF;
+	margin-bottom: -20px;
+	padding: 0px;
+}
+.freshymaps #tabs #tabs-1 #showListings {
+	width: 290px;
+	padding-top: 110px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 5px;
+	margin: 0px;
+	background-color: #FFF;
+}
+#toolbar #cali {
+	float: right;
+	margin-right: 10px;
+	cursor: pointer;
+}
+#toolbar #calilist {
+	float: right;
+	background-color: #FFF;
+	padding-top: 10px;
+	padding-right: 10px;
+	padding-bottom: 5px;
+	padding-left: 10px;
+	border: thin solid #00B1F5;
+	margin-top: -15px;
+	margin-right: 10px;
+	display: none;
+}
+#toolbar #calilist #select {
+	float: left;
+	margin: 0px;
+	padding-right: 5px;
+}
+#toolbar #calilist #go {
+	padding-top: 0px;
+	float: right;
+	cursor: pointer;
+}
+
+/* --------TAB 2: EVENTS---------- */
+.freshymaps #tabs #tabs-2 {
+	width: 300px;
+	background-color: #FFF;
+	margin-bottom: -20px;
+	padding: 0px;
+}
+.freshymaps #tabs #tabs-2 #eventListings {
+	width: 290px;
+	padding-top: 110px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 5px;
+	margin: 0px;
+	background-color: #FFF;
+}
+#toolbar #taglist #select {
+    font-size: 14px;
+	float: left;
+	margin: 0px;
+	padding-top: 3px;
+	padding-right: 5px;
+}
+#toolbar #taglist #go {
+	padding-top: 0px;
+	padding-right: 25px;
+	float: right;
+}
+/* --------TAB 3: PICKS---------- */
+.freshymaps #tabs #tabs-3 {
+	width: 300px;
+	background-color: #FFF;
+	margin-bottom: -20px;
+	padding: 0px;
+}
+.freshymaps #tabs #tabs-3 #picksListings {
+	width: 290px;
+	padding-top: 110px;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 5px;
+	margin: 0px;
+	background-color: #FFF;
+}
+
+/* -------Base Listings Styles----------- */
+.sidebarLabel {
+	background-color: #00AEEF;
+	font-weight: bold;
+	color: #FFF;
+	font-size: 14px;
+	padding-left: 10px;
+	padding-bottom: 3px;
+	padding-top: 3px;
+}
+.sidebarListing {
+	padding-left: 13px;
+	padding-top: 8px;
+	padding-bottom: 10px;
+	padding-right: 5px;
+	height: 85px;
+}
+.sidebarListing:hover {
+	background-color: #F0F0F0;
+}
+.ON {
+	background-color: #F0F0F0;
+}
+#tabs img {
+	float: right;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	margin-left: 5px;
+
+}
+/*.sidebarListingON {
+	padding-left: 10px;
+	border: medium solid #f7f288;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color: #ffffff;
+}
+.sidebarListingON img {
+	float: right;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-top-style: none;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+	margin-right: 5px;
+	margin-left: 5px;
+}*/
+#opening {
+	padding-bottom: 2px;
+	font-size: 11px;
+	color: #333;
+}
+#labelDiv {
+	font-size: 13px;
+	font-weight: bold;
+	color: #000;
+	padding-bottom: 2px;
+}
+#locationDiv {
+	font-size: 12px;
+	font-weight: bold;
+	color: #000;
+	padding-bottom: 2px;
+}
+.advertiser {
+	font-size: 11px;
+	color:#F00;
+	padding-bottom: 2px;
+}
+#advertiserBubble {
+	font-size: 11px;
+	color:#F00;
+	padding-bottom: 2px;
+}
+
+#showDiv {
+	font-size: 12px;
+	color: #00aeef;
+	padding-bottom: 2px;
+	font-weight: bold;
+}
+#eventDiv {
+	font-size: 13px;
+	color: #00aeef;
+	padding-bottom: 2px;
+	font-weight: bold;
+}
+#rangeDiv {
+	font-size: 9px;
+	color: #666;
+	padding-bottom: 10px;
+}
+
+/* --------Footer Content---------- */
+.freshymaps #footer {
+    display: none;
+	position: absolute;
+	bottom: 1px;
+	padding: 0px;
+	width: 850px;
+	right: 1px;
+	margin: 0px;
+}
+.freshymaps #footer #footerContent {
+	width: 539px;
+	height: 128px;
+	text-align: left;
+	background-color: #FFF;
+	float: left;
+	padding: 15px;
+	border-top-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-left-style: solid;
+	border-top-color: #00B1F5;
+	border-left-color: #00B4FB;
+	color: #333;
+}
+.freshymaps #footer #hoodtab{
+	text-align: left;
+	font-size: 12px;
+	color: #555;
+	font-weight: bold;
+	padding-right: 13px;
+	margin: 0px;
+	padding-top: 5px;
+	padding-left: 13px;
+	background-image: url(images/hoodtab.png);
+	background-repeat: repeat;
+	background-position: center top;
+	padding-bottom: 8px;
+	cursor: pointer;
+	width: 275px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-top-color: #00B4FB;
+	border-right-color: #00B4FB;
+	border-left-color: #00B4FB;
+}
+
+.freshymaps #footer #hoods {
+	font-size: 12px;
+	text-align: left;
+	padding-top: 15px;
+	padding-right: 10px;
+	padding-bottom: 15px;
+	padding-left: 15px;
+	display: none;
+	background-image: url(images/hoodtab.png);
+	background-repeat: repeat;
+	border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: #00B4FB;
+}
+.freshymaps #footer #hoods h1 {
+	font-size: 12px;
+	margin: 0px;
+	padding: 0px;
+}
+.freshymaps #footer #hoods .helpertxt {
+	font-size: 10px;
+	font-style: italic;
+}
+.freshymaps #footer #hoodtab img {
+	padding-left: 5px;
+}
+.freshymaps #footer #hoods #hoodclose {
+	float: right;
+	color: #FFF;
+	background-color: #00B1F5;
+	font-size: 10px;
+	padding-top: 2px;
+	padding-right: 5px;
+	padding-bottom: 2px;
+	padding-left: 5px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+
+.freshymaps #footer #sponsor {
+	float: right;
+	width: 280px;
+	height: 158px;
+	background-color: #FFF;
+	margin: 0px;
+}
+.freshymaps #footer #sponsor h1{
+	width: 275px;
+	text-align: left;
+	font-size: 13px;
+	color: #fff;
+	padding-left: 5px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	background-color:#00aeef;
+	margin: 0px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/*.freshymaps #footer #sponsor h1{
+position: relative;
+z-index: 100;
+}
+
+.freshymaps #footer #sponsor h1:after{
+content: "thanks to our sponsors";
+font: 15px "proxima-nova-extra-condensed-1","proxima-nova-extra-condensed-2",sans-serif;
+position: absolute;
+padding-right: 55px;
+padding-left: 5px;
+padding-top: 5px;
+padding-bottom: 5px;
+left: -1px;
+top: 1px;
+color: #666666;
+z-index: -1;
+}*/
+
+
+
+
+/* Miscellaneous classes for reuse */
+.fltrt {
+	margin-left: 8px;
+}
+.fltlft {
+	float: left;
+	margin-right: 8px;
+}
+.clearfloat { 
+	clear:both;
+    height:0;
+    font-size: 1px;
+    line-height: 0px;
+}
+
+
+
+/* OLD STYLES 
+.freshymaps #container {
+	height: 100%;
+	width: 100%;
+	clear: both;
+}*/
+
+
+/* ADJUST WIDTH WHEN BUBBLE IS INTEGRATED */
+
+.freshymaps #topBar #logo {
+	width: 625px;
+	text-align: right;
+}
+.freshymaps #footer .big {
+	font-size: 18px;
+	font-weight: bold;
+}
+.freshymaps #footer #footerContent .submt {
+	width: 125px;
+	float: left;
+	font-size: 14px;
+	color: #666;
+	text-align: center;
+	margin-right: 10px;
+	font-weight: bold;
+	margin-top: 10px;
+	border: 1px solid #00aeef;
+	padding-top: 8px;
+	padding-right: 3px;
+	padding-bottom: 8px;
+	padding-left: 3px;
+}
+.freshymaps #footer #footerContent .helper {
+	margin-left: 325px;
+	font-size: 13px;
+	width: 200px;
+	margin-top: -15px;
+}
+.freshymaps #footer  a {
+	color: #00aeef;
+}
+.freshymaps #footer #footerContent p {
+	font-size: 12px;
+	margin: 0px;
+	padding: 0px;
+}
+
+/* BUBBLE STyLES */
+.freshymaps #sample_bubble {
+	padding: 5px;
+	width: 575px;
+	height: 100%;
+	text-align: left;
+}
+/*Bubble Styles -----------------------*/
+
+/* Contents ------------*/
+#insideBubble {float: left; width: 575px; padding-right: 10px; margin-left: 5px;}
+#insideBubble img {float: left; margin-right: 10px;}
+#insideBubble a {text-decoration: none; color: #00aeef; }
+#insideBubble a:hover {text-decoration: underline;}
+
+
+/* Show Title, Description ----*/
+#showBubble {font-size: 15px; color: #666; font-weight: bold; }
+#description {font-size: 12px; color: #666; }
+
+/* Opening ------*/
+.openingBubble {font-size: 11px; color: #2EB1EF; padding-top: 5px; padding-bottom: 5px; }
+
+/* Gallery info ----*/
+#galleryInfos {float: right; width: 150px; padding: 5px; border: solid 1px #ccc; margin-left: 5px; margin-bottom: 5px; margin-right: 10px;}
+#titleBubble {font-size: 15px; font-weight: normal; color: #00aeef; }
+#addressBubble {font-size: 11px;}
+#hours {margin-top: 5px; font-size: 11px;}
+#blogURL {font-size: 11px; padding-top: 5px;}
+
+#septaBubble {
+    display: none;
+    margin-top: 15px;
+	height: 35px;
+	padding-left: 40px;
+	color: #666;
+	background: url(http://maps.theartblog.org/images/septa.jpg) top left no-repeat;
+}

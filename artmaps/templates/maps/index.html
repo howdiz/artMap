@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<title>Philly Art Map</title>
+    <link type="text/css" href="media/maps/themes/base/jquery.ui.all.css" rel="stylesheet" />
+	<script src="media/maps/js/jquery-1.4.2.js"></script>
+	<script src="media/maps/js/ui/jquery.ui.core.js"></script>
+	<script src="media/maps/js/ui/jquery.ui.widget.js"></script>
+	<script src="media/maps/js/ui/jquery.ui.tabs.js"></script>
+    <script src="media/maps/js/ui/jquery.ui.button.js"></script>
+	<script src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
+	<script src="media/maps/js/artmaps.js"></script>
+	<script src="media/maps/js/jquery.jcarousel.js"></script>
+    <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+	
+	<link rel="stylesheet" type="text/css" href="media/maps/css/custom-theme/jquery-ui-1.8.1.custom.css">
+    <link href="media/maps/css/fresh.css" rel="stylesheet" type="text/css" />
+    <link href="media/maps/css/jCarousel/jCarousel.css" rel="stylesheet" type="text/css" />
+    <link href="media/maps/css/jCarousel/skins/tango/skin.css" rel="stylesheet" type="text/css" />
+<!--[if IE]>
+<style type="text/css"> 
+/* place css fixes for all versions of IE in this conditional comment */
+.freshymaps #sidebar1 { padding-top: 30px; }
+.freshymaps #mainContent { zoom: 1; padding-top: 15px; }
+/* the above proprietary zoom property gives IE the hasLayout it needs to avoid several bugs */
+</style>
+<![endif]-->
+
+<script>
+var infowindow = new google.maps.InfoWindow();
+</script>
+
+<script id="showBubbleTemplate" type="text/x-jquery-tmpl">
+<ul>	    
+    <li> 
+        <div id="insideBubble">
+        <div id="galleryInfos">
+            	<div id="titleBubble"><a href="${fields.gallery.fields.gallery_url}" target="blank">${fields.gallery.fields.name}</a> </div> 
+        		<div id="addressBubble">${fields.gallery.fields.location.fields.address1}, ${fields.gallery.fields.location.fields.address2} ${fields.gallery.fields.location.fields.city}, ${fields.gallery.fields.location.fields.state} ${fields.gallery.fields.location.fields.zipcode}<br /><a href="http://maps.google.com/maps?f=d&source=s_d&daddr=${fields.gallery.fields.location.fields.address1} ${fields.gallery.fields.location.fields.city} ${fields.gallery.fields.location.fields.state}, ${fields.gallery.fields.location.fields.zipcode}" target="blank">Get Directions &raquo;</a></div> 
+            	<div id="hours">Gallery Hours: ${fields.gallery.fields.gallery_hours}</div>
+            	<div id="septaBubble">${fields.gallery.fields.location.fields.septa}</div>
+            	<div id="blogURL"><a href="${fields.gallery.fields.blog_url}" target="blank">Read about this location on theartblog&raquo;</a> </div> 
+         </div>
+        	<img src="media/maps/uploads/${fields.image}"> 
+            <div id="showBubble">${fields.name}</div> 
+            <div id="description">${fields.description}</div> 
+            <div class="openingBubble">Opening Reception: ${formatDate(fields.opening_date)},${fields.time_info} </div> 
+       </div> 
+    </li>
+</ul>    
+</script>	
+
+<script id="eventBubbleTemplate" type="text/x-jquery-tmpl">
+<ul>
+<li> 
+	<div id="insideBubble"><img src="media/maps/uploads/${fields.image}">
+	 <div id="galleryInfos">
+        <div id="titleBubble"><a href="${fields.gallery.fields.gallery_url}" target="blank">${fields.gallery.fields.name}</a></div>
+        <div id="addressBubble">${fields.gallery.fields.location.fields.address1}, ${fields.gallery.fields.location.fields.address2}<br />${fields.gallery.fields.location.fields.city} ${fields.gallery.fields.location.fields.state} ${fields.gallery.fields.location.fields.zipcode}</div> 
+        <div id="urlBubble"><a href="http://maps.google.com?q=${fields.gallery.fields.location.fields.address1} ${fields.gallery.fields.location.fields.city} ${fields.gallery.fields.location.fields.state}, ${fields.gallery.fields.location.fields.zipcode}" target="blank">Get Directions</a></div>
+        <div id="admission">${fields.admission}</div>
+        <div id="blogURL"><a href="${fields.gallery.fields.blog_url}" target="blank">Read more about ${fields.gallery.fields.name} on theartblog&raquo;</a> </div> 
+        <div id="septaBubble">${fields.gallery.fields.location.fields.septa}</div>
+      </div>
+    	<div id="showBubble">${fields.title}</div> 
+        <div id="description">${fields.description}</div> 
+		<div class="eventdateBubble">Event Date: ${formatDate(fields.date)} ${fields.timeinfo} </div>
+	</div> 
+</li> 
+</ul>
+
+</script>
+
+<script id="bubbleOpen" type="text/x-jquery-tmpl">
+<div id="sample_bubble"> 
+    <ul id="carousel" class="jcarousel-skin-tango"> 
+</script>
+
+<script id="bubbleClose" type="text/x-jquery-tmpl">
+	</ul>
+</div>
+</script>
+
+</head>
+
+<body class="freshymaps" >
+<div id="map"> <div id="map_canvas"></div></div>
+
+<div id="topBar">
+	<div id="logo"><img src="media/maps/images/maps_logo.png"/></div>
+</div>
+
+
+<div id="tabs">
+	<div id ="tabsTop">
+			<ul>
+				<li><a href="#tabs-1">shows</a></li>
+				<li><a href="#tabs-2">events</a></li>
+				<li><a href="#tabs-3">our picks</a></li>
+			</ul>
+    </div>
+  <div id="tabs-1">
+  <div id="sidebarTop">
+           <div id="toolbar">
+       			  <!--div id="showcontrols">
+           				<span>agenda:</span>
+ 				  </div-->
+                  <div id="cali">
+                   		<img src="media/maps/images/calendar.png" alt="Browse by date" width="40" height="35" align="middle" />
+                   </div>
+                   <div id="format">
+                            <input type="checkbox" id="check" name="openings" /><label for="check1">new this week</label>
+                            <input type="checkbox" id="check" name="closings" /><label for="check2">last chance</label>
+                   </div>
+                   <br class="clearfloat" />
+                   <div id="calilist">
+                   			<div id="select">
+                        	<select name="month" >
+                                <option value="tag1">July</option>
+                                <option value="tag2">June</option>
+                                <option value="tag3" selected="selected">May</option>
+                                <option value="tag4">April</option>
+                                <option value="tag5">March</option>
+                                <option value="tag6">February</option>
+                                <option value="tag7">January</option>
+     						</select>  
+                            <select name="year" >
+                                <option value="tag1">2009</option>
+                                <option value="tag3" selected="selected">2010</option>
+     						</select>
+                            </div>       
+                            <div id="go"><img src="media/maps/images/gobtn.png"/></div>              
+                   </div>     
+         </div>
+    </div>           
+    <div id="showListings">
+{% if shows %}
+        <div id="showlistings" >
+		<div class="sidebarLabel">
+			shows opening in {{ today|date:"F Y" }}
+		</div>
+        {% for show in this_month_shows %}
+        <div class="sidebarListing location{{show.gallery.location.id}}" id="show{{show.id}}">
+        	<a class="listing"><img src="media/maps/uploads/{{ show.thumbnail }}">
+            	<div id="labelDiv">{{ show.gallery }}</div>
+            	<div id="showDiv">{{ show.name }}</div>
+            	<div id="opening">Opening : {{ show.opening_date|date:"n/j/Y" }}, {{ show.time_info }}</div>
+            	<div id="rangeDiv">{{ show.opening_date|date:"n/j/Y" }} – {{ show.end_date|date:"n/j/Y" }}</div>
+<!--div class="address">{{ show.gallery.location.address1 }}</div-->
+            </a>
+        </div>
+        {% endfor %}
+	<div class="sidebarLabel">Ongoing Shows</div>
+	{% for show in ongoing_shows %}
+        <div class="sidebarListing location{{show.gallery.location.id}}" id="show{{show.id}}">
+        	<a class="listing"><img src="media/maps/uploads/{{ show.thumbnail }}">
+            	<div id="labelDiv">{{ show.gallery }}</div>
+            	<div id="showDiv">{{ show.name }}</div>
+            	<div id="opening">Opening : {{ show.opening_date|date:"n/j/Y" }}, {{ show.time_info }}</div>
+            	<div id="rangeDiv">{{ show.opening_date|date:"n/j/Y" }} – {{ show.end_date|date:"n/j/Y" }}</div>
+<!--div class="address">{{ show.gallery.location.address1 }}</div-->
+            </a>
+        </div>
+        {% endfor %}
+        </div>
+{% else %}
+        <p>No Shows</p>
+{% endif %}
+<div id="listing3" class="sidebarListing">
+        	
+</div>
+<br class="clearfloat">  
+    </div><!-- End showListings -->
+    
+    
+    </div>
+			<div id="tabs-2">
+				<div id="sidebarTop">
+           <div id="toolbar">
+       			  <div id="showcontrols">
+           				<span>type:</span>
+ 				  </div>
+                   <div id="taglist">
+                        <div id="select">
+                        <!--<select name="tag" >
+							{% for event_type  in event_types %}
+							<option value="{{ event_type }}">{{ event_type}}</option>
+							{% endfor %}
+                        </select>-->
+					  
+							{% for event_type  in event_types %}
+							<input type="checkbox" name="event_type" value="{{ event_type }}" checked="true">{{ event_type }}</input>
+							{% endfor %}
+                        </div>       
+                        <div id="go"><img src="media/maps/images/gobtn.png"/></div>              
+                   </div>     
+         </div>
+    </div><!-- End sidebarTop -->           
+    <div id="eventListings"><!--- Begin Listings --->
+    	{% for event in events %}	
+    	
+    	<div class="sidebarLabel">
+        	<span>{{ event.date|date:"l F j ,  Y" }}</span>
+        </div>
+       		<div class="sidebarListing location{{event.gallery.location.id}}" id="event{{event.id}}">
+        	<a class="listing"><img src="media/maps/uploads/{{ event.thumbnail }}">
+                <div id="labelDiv">{{ event.gallery }}</div>
+                <div id="showDiv">{{ event.title }}</div>
+				{% if event.multiday %}
+				<div id="timeInfo">{{ event.timeInfo }}</div>
+				{% else %}
+                <div id="rangeDiv">{{ event.start_time|time:"P"}} - {{ event.start_time|time:"P" }}</div>
+				{% endif %}
+        		<br class="clearfloat" />
+			</a>
+        </div>
+    	{% endfor %}
+    </div><!-- End eventListings -->
+			</div>
+			
+			<div id="tabs-3">
+				<div id="sidebarTop">
+           			<div id="toolbar">
+            			<a href="http://eepurl.com/tePD" target="blank">
+            				<img src="http://maps.theartblog.org/images/maps_newsletter_btn.png" alt="newsletter" border="0">
+            			</a>
+            		</div>
+           		</div><!-- End sidebarTop --> 
+        <div id="picksListings"><!--- Begin Listings --->
+        {% for show in shows %}
+        {% if show.pick %} 
+		<div class="sidebarListing location{{show.gallery.location.id}}" id="show{{show.id}}">
+        	<a class="listing"><img src="media/maps/uploads/{{ show.thumbnail }}">
+            	<div id="labelDiv">{{ show.gallery }}</div>
+            	<div id="showDiv">{{ show.name }}</div>
+            	<div id="opening">Opening : {{ show.opening_date }}, {{ show.time_info }}</div>
+            	<div id="rangeDiv">{{ show.opening_date }} – {{ show.end_date }}</div>
+<!--div class="address">{{ show.gallery.location.address1 }}</div-->
+            </a>
+        </div>
+		{% endif %}
+        {% endfor %}
+
+    	{% for event in events %}	
+  		{% if event.pick %}  	
+    	<div class="sidebarLabel">
+        	<span>{{ event.date }}</span>
+        </div>
+       		<div class="sidebarListing location{{event.gallery.location.id}}" id="eventPick{{event.id}}">
+        	<a class="listing"><img src="media/maps/uploads/{{ event.thumbnail }}">
+                <div id="labelDiv">{{ event.gallery }}</div>
+                <div id="showDiv">{{ event.title }}</div>
+                <div id="rangeDiv">{{ event.start_time }} - {{ event.start_time }}</div>
+        		<br class="clearfloat" />
+			</a>
+        </div>
+		{% endif %}
+    	{% endfor %}
+    </div><!-- End eventListings -->
+			</div>
+		</div><!-- end tabs -->
+
+<div id="footer">
+	<div id="hoodtab" class="hoodtab">Browse art listings by Philly neighborhood <img src="media/maps/images/gobtn.png" width="14px" align="right" /></div>
+	<div id="hoods"><div id="hoodclose">X</div>
+                <input type="checkbox" id="hood1" /><label for="hood1">Old City/Northern Liberties</label>
+                <input type="checkbox" id="hood2" /><label for="hood2">Center City</label>
+                <input type="checkbox" id="hood3" /><label for="hood3">Kensington/Frankfort Avenue Arts</label>
+                <input type="checkbox" id="hood4" /><label for="hood4">South Philly</label>
+                <input type="checkbox" id="hood5" /><label for="hood5">West Philly</label>
+                <input type="checkbox" id="hood6" /><label for="hood6">Hinterlands</label>
+          
+    </div><!-- End Hoods Menu -->
+    <div id="footerContent">
+    <p><span class="big">theartblog's Maps & Listings</span> is mapping Philadelphia's Art Community, to make shows and events more accesible to everyone.  User submitted listings are published by us, and each month we promote <em>our picks</em> of shows in museums, galleries, and alternative art spaces throughout Philadelphia.</p>
+        <div class="helper"><a href="#"><img src="media/maps/images/gobtn.png" width="15px" align="right" border="0"/>Submission guidelines &amp; FAQ</a></div>
+    <div class="submt">submit a show</div>
+    <div class="submt">submit an event</div>
+  </div><!-- End Footer Content -->
+    <div id="sponsor"><h1>thanks to our sponsors</h1><img src="media/maps/images/KnightFoundationLogo.gif" width="275px" style="margin-top: 15px;" alt="sponsor">
+    <br />
+    <img src="media/maps/images/bloglogo.png" width="200px" align="right" />
+    </div>
+</div>
+</body>
+</html>
